@@ -3,25 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TaskRequest;
-use App\Models\Task;
-use App\Models\TaskCollection;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 { 
-    private $tasks;
-    public function __construct()
-    {
-        $this->tasks = new TaskCollection();
-    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        return view('admin.task.index')->with('tasks', $this->tasks->all());
+    { 
+        $tasks = DB::table('tasks')->get();
+        return view('admin.task.index', compact('tasks'));
     }
 
     /**
@@ -42,18 +36,21 @@ class TaskController extends Controller
      */
     public function store(TaskRequest $request)
     { 
-        $newTask = new Task(
-            $request->title,
-            $request->description,
-            $request->type,
-            $request->status,
-            $request->startDate,
-            $request->dueDate,
-            $request->assignee,
-            $request->estimate,
-            $request->actual) ;
-        $this->tasks->addItem($newTask);
-        return view('admin.task.index')->with('tasks', $this->tasks->all());
+        $task = DB::table('tasks')->insert([
+            'title' => $request->title,
+            'description' => $request->description,
+            'type' => $request->type,
+            'status' => $request->status,
+            'start_date' => $request->start_date,
+            'due_date' => $request->due_date,
+            'assignee' => $request->assignee,
+            'estimate' => $request->estimate,
+            'actual' => $request->actual
+        ]);
+        if ($task) {
+            return redirect()->route('admin.tasks.index')->with('msg', 'Created successfully!');
+        }
+        return redirect()->route('admin.tasks.index')->with('msg', 'Failed to create!');
     }
 
     /**
@@ -75,8 +72,8 @@ class TaskController extends Controller
      */
     public function edit($id)
     {
-        $task = $this->tasks->getItem($id);
-        return view('admin.task.edit',compact('task','id'));
+        $task = DB::table('tasks')->find($id);
+        return view('admin.task.edit', compact('task'));
     }
 
     /**
@@ -88,18 +85,24 @@ class TaskController extends Controller
      */
     public function update(TaskRequest $request, $id)
     {
-        $task = new Task(
-            $request->title,
-            $request->description,
-            $request->type,
-            $request->status,
-            $request->startDate,
-            $request->dueDate,
-            $request->assignee,
-            $request->estimate,
-            $request->actual) ;
-        $this->tasks->updateItem($task,$id);
-        return view('admin.task.index')->with('tasks', $this->tasks->all());
+        if (DB::table('tasks')->find($id)) {
+            $task = DB::table('tasks')->where('id', $id)->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'type' => $request->type,
+                'status' => $request->status,
+                'start_date' => $request->start_date,
+                'due_date' => $request->due_date,
+                'assignee' => $request->assignee,
+                'estimate' => $request->estimate,
+                'actual' => $request->actual
+            ]);
+            if ($task) {
+                return redirect()->route('admin.tasks.index')->with('msg', 'Updated successfully!');
+            }
+            return redirect()->route('admin.tasks.index')->with('msg', 'Failed to update!');
+        }
+        return redirect()->back()->with('msg', 'Invalid Id!');
     }
 
     /**
@@ -110,7 +113,80 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        $this->tasks->deleteItem($id);
-        return view('admin.task.index')->with('tasks', $this->tasks->all());
+        $task = DB::table('tasks')->where('id', $id)->delete();
+        if ($task) {
+            return redirect()->route('admin.tasks.index')->with('msg', 'Deleted successfully!');
+        }
+        return redirect()->route('admin.tasks.index')->with('msg', 'Failed to delete!');
+    }
+
+    /**
+     * Practice with query Buider
+     *
+     * @param  int  $id
+     * @return void
+     */
+    public function practice($id)
+    {
+        //Lấy tất cả dữ liệu trong table.
+        DB::table('users')->get();
+        //Đếm số lượng record trả về
+        $users = DB::table('users')->count();
+        //Lấy ra một dữ liệu trong table.
+        DB::table('tasks')->find($id);
+        //Chunk giá trị trả về.
+        DB::table('users')->orderBy('id')->chunk(10, function ($users) {
+            foreach ($users as $user) {
+                echo $user->name;
+            }
+        });
+        //Đếm số lượng record trả về.
+        DB::table('users')->count();
+        //Kiểm tra sự tồn tại của dữ liệu
+        if (DB::table('users')->where('email', 'abc@gmail.com')->exists()) {
+            // exists
+        }
+        //Select dữ liệu trong database.
+        DB::table('users')
+            ->select('name', 'email as user_email')
+            ->get();
+        // Joins
+        DB::table('users')
+            ->join('tasks', 'users.id', '=', 'tasks.assignee')
+            ->select('users.*', 'tasks.title', 'tasks.start_date', 'tasks.due_date')
+            ->get();
+        // Left join
+        DB::table('users')
+            ->leftJoin('tasks', 'users.id', '=', 'tasks.assignee')
+            ->get();
+        // Cross join
+        DB::table('users')
+            ->crossJoin('tasks')
+            ->get();
+        //  Advanced Join 
+        // "select * from `users` inner join `tasks` on `users`.`id` = `tasks`.`assignee` and `tasks`.`assignee` = 5"
+        DB::table('users')
+            ->join('tasks', function ($join) {
+                $join->on('users.id', '=', 'tasks.assignee')
+                     ->where('tasks.assignee', '=', 5);
+            })
+            ->get();
+        //Union
+        $first = DB::table('users')
+                    ->whereNull('name');
+
+        $users = DB::table('users')
+                    ->whereNull('email')
+                    ->union($first)
+                    ->get();
+        //Where query.
+        //select * from `tasks` where `type` = 1 or (`status` = 1 and estimate > actual)
+        DB::table('tasks')
+            ->where('type', 1)
+            ->orWhere(function($query) {
+                $query->where('status', 1)
+                    ->whereRaw('estimate > actual');
+            })
+            ->get();
     }
 }

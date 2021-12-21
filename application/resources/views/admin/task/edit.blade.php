@@ -39,7 +39,7 @@ Update Task
               <!-- /.card-header -->
               
               <!-- form start -->
-              <form method="post" action="{{route('admin.tasks.update',['task'=>$id])}}" enctype="multipart/form-data">
+              <form method="post" action="{{route('admin.tasks.update', ['task'=>$task->id])}}" enctype="multipart/form-data">
               @method('PUT')  
               @csrf
                 <div class="card-body">
@@ -73,16 +73,16 @@ Update Task
                   @enderror
                   <div class="form-group">
                     <label>Start Date</label>
-                    <input type="text" name="startDate" class="form-control" value="{{ old('startDate') ? old('startDate') : $task->startDate}}">
+                    <input type="text" name="start_date" class="form-control" value="{{ old('start_date') ? old('start_date') : $task->start_date}}">
                   </div>
-                  @error('startDate')
+                  @error('start_date')
                     <div class="alert alert-danger">{{ $message }}</div>
                   @enderror
                   <div class="form-group">
                     <label>Due Date</label>
-                    <input type="text" name="dueDate" class="form-control" value="{{ old('dueDate') ? old('dueDate') : $task->dueDate}}">
+                    <input type="text" name="due_date" class="form-control" value="{{ old('due_date') ? old('due_date') : $task->due_date}}">
                   </div>
-                  @error('dueDate')
+                  @error('due_date')
                     <div class="alert alert-danger">{{ $message }}</div>
                   @enderror
                   <div class="form-group">

@@ -72,16 +72,16 @@ Create Task
                   @enderror
                   <div class="form-group">
                     <label>Start Date</label>
-                    <input type="text" name="startDate" class="form-control" value="{{ old('startDate')}}">
+                    <input type="text" name="start_date" class="form-control" value="{{ old('start_date')}}">
                   </div>
-                  @error('startDate')
+                  @error('start_date')
                     <div class="alert alert-danger">{{ $message }}</div>
                   @enderror
                   <div class="form-group">
                     <label>Due Date</label>
-                    <input type="text" name="dueDate" class="form-control" value="{{ old('dueDate')}}">
+                    <input type="text" name="due_date" class="form-control" value="{{ old('due_date')}}">
                   </div>
-                  @error('dueDate')
+                  @error('due_date')
                     <div class="alert alert-danger">{{ $message }}</div>
                   @enderror
                   <div class="form-group">
