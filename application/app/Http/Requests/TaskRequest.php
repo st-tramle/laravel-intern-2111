@@ -24,13 +24,13 @@ class TaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|min:3|max:30',
-            'description' => 'required|min:3|max:100',
-            'type' =>'required|string',
-            'status' =>'required|string',
-            'startDate' =>'required|date',
-            'dueDate' =>'required|date|after_or_equal:startDate',
-            'assignee' =>'required|string|max:40',
+            'title' => 'required|max:255',
+            'description' => 'required|max:1000',
+            'type' =>'required|integer',
+            'status' =>'required|integer',
+            'start_date' =>'required|date',
+            'due_date' =>'required|date|after_or_equal:start_date',
+            'assignee' =>'required|numeric',
             'estimate' =>'required|numeric',
             'actual' =>'required|numeric',
         ];
@@ -42,8 +42,8 @@ class TaskRequest extends FormRequest
             'description.*' =>  'Please enter the title with a minimum length of 3 and a maximum length of 100!',
             'type.*' => 'Please enter the type',
             'status.*' =>  'Please enter the status',
-            'startDate.*' => 'Please enter the start date with format date(MM/dd/YYYY)',
-            'dueDate.*' => 'Please enter the due date greater than or equal to start date' ,
+            'start_date.*' => 'Please enter the start date with format date(MM/dd/YYYY)',
+            'due_date.*' => 'Please enter the due date greater than or equal to start date' ,
             'assignee.*' => 'Please enter the assignee with a maximum length of 40!',
             'estimate.*' => 'Please enter a number to the estimate',
             'actual.*' => 'Please enter a number to the actual'
