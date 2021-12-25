@@ -16,8 +16,8 @@ class TaskFactory extends Factory
         return [
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
-            'type' => rand(0,9),
-            'status' => rand(1,5),
+            'type' => rand(1,3),
+            'status' => rand(1,6),
             'start_date' => $this->faker->date(),
             'due_date' => $this->faker->date(),
             'assignee' => rand(1,50),

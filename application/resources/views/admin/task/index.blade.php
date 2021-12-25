@@ -43,23 +43,27 @@ Task
                       <th>Description</th>
                       <th>Start Date</th>
                       <th>Due Date</th>
+                      <th>Type</th>
+                      <th>Status</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     @foreach($tasks as $task)
                     @php
-                    $url = route('admin.tasks.edit', ['task'=>$task->id]);
+                    $url = route('admin.tasks.edit', ['task' => $task->id]);
                     @endphp
                     <tr>
                       <td>{{$task->id}}</td>
                       <td><a href="{{$url}}"> {{$task->title}}</a></td>
                       <td>{{$task->description}}</td>
-                      <td>{{$task->estimate}}</td>
-                      <td>{{$task->actual}}</td>
+                      <td>{{$task->start_date}}</td>
+                      <td>{{$task->due_date}}</td>
+                      <td>{{$task->type}}</td>
+                      <td>{{$task->status}}</td>
                       <td>
                         <button type="button" class="btn btn-block bg-gradient-info btn-xs"><a style="color: white;" href="{{$url}}">Edit</a></button>
-                        <form method="POST" action="{{ route('admin.tasks.destroy', [ 'task'=> $task->id ]) }}">
+                        <form method="POST" action="{{ route('admin.tasks.destroy', ['task' => $task->id]) }}">
                           @csrf
                           <input type="hidden" name="_method" value="DELETE">
                           <button type="submit" class="btn btn-block bg-gradient-danger btn-xs">

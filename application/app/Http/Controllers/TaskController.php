@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\TaskRepositoryInterface;
 use App\Http\Requests\TaskRequest;
 use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 { 
+    private TaskRepositoryInterface $taskRepository;
+
+    public function __construct(TaskRepositoryInterface $taskRepository)
+    {
+        $this->taskRepository = $taskRepository;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +21,7 @@ class TaskController extends Controller
      */
     public function index()
     { 
-        $tasks = DB::table('tasks')->get();
+        $tasks = $this->taskRepository->all();
         return view('admin.task.index', compact('tasks'));
     }
 
@@ -36,17 +43,7 @@ class TaskController extends Controller
      */
     public function store(TaskRequest $request)
     { 
-        $task = DB::table('tasks')->insert([
-            'title' => $request->title,
-            'description' => $request->description,
-            'type' => $request->type,
-            'status' => $request->status,
-            'start_date' => $request->start_date,
-            'due_date' => $request->due_date,
-            'assignee' => $request->assignee,
-            'estimate' => $request->estimate,
-            'actual' => $request->actual
-        ]);
+        $task = $this->taskRepository->create($request->validated());
         if ($task) {
             return redirect()->route('admin.tasks.index')->with('msg', 'Created successfully!');
         }
@@ -72,7 +69,7 @@ class TaskController extends Controller
      */
     public function edit($id)
     {
-        $task = DB::table('tasks')->find($id);
+        $task = $this->taskRepository->getById($id);
         return view('admin.task.edit', compact('task'));
     }
 
@@ -85,24 +82,13 @@ class TaskController extends Controller
      */
     public function update(TaskRequest $request, $id)
     {
-        if (DB::table('tasks')->find($id)) {
-            $task = DB::table('tasks')->where('id', $id)->update([
-                'title' => $request->title,
-                'description' => $request->description,
-                'type' => $request->type,
-                'status' => $request->status,
-                'start_date' => $request->start_date,
-                'due_date' => $request->due_date,
-                'assignee' => $request->assignee,
-                'estimate' => $request->estimate,
-                'actual' => $request->actual
-            ]);
-            if ($task) {
-                return redirect()->route('admin.tasks.index')->with('msg', 'Updated successfully!');
-            }
-            return redirect()->route('admin.tasks.index')->with('msg', 'Failed to update!');
+        $task = $this->taskRepository->getById($id);
+        $task = $this->taskRepository->update($id, $request->validated());
+        if ($task) {
+            return redirect()->route('admin.tasks.index')->with('msg', 'Updated successfully!');
         }
-        return redirect()->back()->with('msg', 'Invalid Id!');
+        return redirect()->route('admin.tasks.index')->with('msg', 'Failed to update!');
+        
     }
 
     /**
@@ -113,7 +99,7 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        $task = DB::table('tasks')->where('id', $id)->delete();
+        $task = $this->taskRepository->delete($id);
         if ($task) {
             return redirect()->route('admin.tasks.index')->with('msg', 'Deleted successfully!');
         }

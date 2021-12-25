@@ -23,13 +23,14 @@ class TaskRequest extends FormRequest
      */
     public function rules()
     {
+        //dd($_REQUEST);
         return [
             'title' => 'required|max:255',
             'description' => 'required|max:1000',
-            'type' =>'required|integer',
-            'status' =>'required|integer',
-            'start_date' =>'required|date',
-            'due_date' =>'required|date|after_or_equal:start_date',
+            'type' =>'required|integer|min:1|max:3',
+            'status' =>'required|integer|min:1|max:6',
+            'start_date' =>'required|date|date_format:Y-m-d',
+            'due_date' =>'required|date|date_format:Y-m-d|after_or_equal:start_date',
             'assignee' =>'required|numeric',
             'estimate' =>'required|numeric',
             'actual' =>'required|numeric',
@@ -42,7 +43,7 @@ class TaskRequest extends FormRequest
             'description.*' =>  'Please enter the title with a minimum length of 3 and a maximum length of 100!',
             'type.*' => 'Please enter the type',
             'status.*' =>  'Please enter the status',
-            'start_date.*' => 'Please enter the start date with format date(MM/dd/YYYY)',
+            'start_date.*' => 'Please enter the start date with format date(YYYY-MM-dd)',
             'due_date.*' => 'Please enter the due date greater than or equal to start date' ,
             'assignee.*' => 'Please enter the assignee with a maximum length of 40!',
             'estimate.*' => 'Please enter a number to the estimate',
