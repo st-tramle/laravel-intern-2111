@@ -14,12 +14,12 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function getById($id)
     {
-        return Task::getById($id);;
+        return Task::findOrFail($id);
     }
 
     public function delete($id)
     {
-        Task::destroy($id);
+        return Task::destroy($id);
     }
 
     public function create(array $attributes)
@@ -29,6 +29,6 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function update($id, array $attributes)
     {
-        return Task::findById($id)->update($attributes);
+        return Task::id($id)->update($attributes);
     }
 }

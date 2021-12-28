@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 { 
-    private TaskRepositoryInterface $taskRepository;
+    private $taskRepository;
 
     public function __construct(TaskRepositoryInterface $taskRepository)
     {
@@ -82,7 +82,6 @@ class TaskController extends Controller
      */
     public function update(TaskRequest $request, $id)
     {
-        $task = $this->taskRepository->getById($id);
         $task = $this->taskRepository->update($id, $request->validated());
         if ($task) {
             return redirect()->route('admin.tasks.index')->with('msg', 'Updated successfully!');

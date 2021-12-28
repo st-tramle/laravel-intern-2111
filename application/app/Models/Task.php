@@ -77,12 +77,7 @@ class Task extends Model
         return Carbon::parse($value)->format('d/m/Y');
     }
 
-    public function scopeGetById($query,$id)
-    {
-        return $query->findOrFail($id);
-    }
-
-    public function scopeFindById($query,$id)
+    public function scopeId($query,$id)
     {
         return $query->whereId($id);
     }
