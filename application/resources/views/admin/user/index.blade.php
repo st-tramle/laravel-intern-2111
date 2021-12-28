@@ -40,15 +40,14 @@ User
                   <tbody>
                     @foreach($users as $user)
                     <tr>
-                      <td>{{$user->name}}</td>
-                      <td>{{$user->email}}</td>
-                      <td>
-                        <form method="GET" action="{{ route('admin.users.show', ['user' => $user->id]) }}">
-                          @csrf
-                          <button type="submit" class="btn btn-block bg-gradient-danger btn-xs">
-                            <i data-feather="delete">Details</i>
-                          </button>
-                        </form>
+                      <td>{{ $user->name }}</td>
+                      <td>{{ $user->email }}</td>
+                      <td class="project-actions">
+                        <a class="btn btn-primary btn-sm" href="{{ route('admin.users.show', ['user' => $user->id]) }}">
+                          <i class="fas fa-folder">
+                          </i>
+                          Detail
+                        </a>
                       </td>
                     </tr>
                     @endforeach
