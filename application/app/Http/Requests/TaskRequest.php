@@ -23,7 +23,6 @@ class TaskRequest extends FormRequest
      */
     public function rules()
     {
-        //dd($_REQUEST);
         return [
             'title' => 'required|max:255',
             'description' => 'required|max:1000',
